@@ -5,7 +5,7 @@ Sample code for the Vitis HLS bug I suffered from.
 ## Environment
 
 - Ubuntu 20.04
-- Vitis HLS 2022.2
+- Vitis HLS 2022.x
 - CMake
 - Make
 
@@ -27,12 +27,13 @@ Example of using Vitis 2022.2
 2. Run synthesis
 
 ```sh
-make csynth_<xxxx>
+make <target>
 ```
 
 - `<xxx>`
-    - `duplicate` : [duplicate.cpp](./duplicate.cpp)
-    - `duplicate2`: [duplicate.cpp](./duplicate.cpp) with NOCRASH macro
+    - `csynth_duplicate` : [duplicate.cpp](./duplicate.cpp)
+    - `csynth_duplicate2`: [duplicate.cpp](./duplicate.cpp) with NOCRASH macro
+    - `cosim_cosimbug` : [cosim_tb.cpp](./cosim_tb.cpp) (* Vitis HLS 2022.1)
 
 ## duplicate.cpp
 
@@ -125,6 +126,29 @@ module Duplicate (
 );
 ```
 </details>
+
+## cosim_tb.cpp
+
+- [cosim.cpp](./cosim.cpp) : sample top module. no problem
+- [cosim_tb.cpp](./cosim_tb.cpp) : fail to cosim
+
+If the top module function is called in class member/static functions, an error occurs in cosim with Vitis HLS 2022.1.
+
+I have verified that this problem has been corrected in Vitis HLS 2022.2.
+
+```sh
+mkdir build
+cd build
+cmake .. -DVITIS_HLS_ROOT=/tools/Xilinx/Vitis_HLS/2022.1
+make cosim_cosimbug
+```
+
+Wrapper functions can be used to work around this bug.
+
+```sh
+make cosim_cosimbug-workaround
+```
+
 
 ## TODO
 
